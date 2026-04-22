@@ -2,13 +2,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { clearTokens, isLead } from '../lib/auth';
 
+// v0.3.0 CWS review fix (cat-choir CRIT-03): only surface nav links that
+// resolve to real pages. Audit, Firehose, Modmail, and Mods are tracked
+// in Phase 2B and will come back once their routes return real data.
+// Routes remain registered in App.tsx so direct URLs still work during
+// development; they're just hidden from the primary nav.
 const LINKS: { to: string; label: string; leadOnly?: boolean }[] = [
   { to: '/', label: 'Home' },
   { to: '/features', label: 'Features' },
-  { to: '/audit', label: 'Audit' },
-  { to: '/firehose', label: 'Firehose' },
-  { to: '/modmail', label: 'Modmail' },
-  { to: '/mods', label: 'Mods', leadOnly: true },
 ];
 
 export function Layout() {
