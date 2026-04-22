@@ -50,6 +50,16 @@ Raw personal data — email addresses, phone numbers, payment details, governmen
 
 Because the extension is used by a small team of moderators, any question, correction, or deletion request should be sent to the contact address above. Deletion of a moderator's audit-log entries on request is supported (the tool's maintainer can remove rows by moderator ID).
 
+## v7.0 data categories
+
+v7.0 introduces two new worker-side data classes:
+
+- **Precedent entries.** Moderator-authored structured notes tagged to resolved cases (kind, signature, title, optional rule reference, action taken, optional reason, optional source permalink, authoring mod username, timestamp). Purpose: cross-mod consistency. Retention: same class as the audit log (indefinite). Deletable by a lead mod via `/precedent/delete` on request or when a mod leaves the team.
+
+- **AI context payloads.** When a moderator clicks "Generate recommendation" in the Intel Drawer, the worker sends the subject kind (User/Thread/Post/QueueItem), subject id, and a minimal context object (username, recent audit events, or post title + excerpt) to xAI's Grok model via the worker proxy. The xAI API key never leaves the Cloudflare secret store. No PII beyond what a moderator already sees in the extension is transmitted. Responses are not stored.
+
+The Intel Drawer itself reads and writes only from existing data classes (profiles, audit log, modmail threads); opening a drawer does not create new records beyond the optional precedent mark.
+
 ## Changes
 
 This policy is versioned with the extension. Material changes will ship alongside a version bump and a release note. The current source of truth is the file at this URL.
