@@ -60,6 +60,20 @@ v7.0 introduces two new worker-side data classes:
 
 The Intel Drawer itself reads and writes only from existing data classes (profiles, audit log, modmail threads); opening a drawer does not create new records beyond the optional precedent mark.
 
+## v7.1 data categories
+
+v7.1 introduces four new transient data classes, all stored in the existing audit D1 or Cloudflare KV:
+
+- **Proposals.** When a moderator clicks Propose Ban / Propose Remove / Propose Lock, a structured record is written to D1 `proposals` (kind, target, duration, reason, proposer, proposer_note, ai_note). Retained 30 days; auto-expired 4 hours after creation if no second mod acts. AI advisory notes use the existing `/ai/next-best-action` KV-budgeted path — no new model traffic.
+
+- **Drafts.** Textarea contents are synced to D1 `drafts` with a 2-second debounce so a second moderator can pick up an unfinished reply. Retention: 24 hours from last edit. Deleted on successful send.
+
+- **Presence (viewing).** When a moderator opens the Intel Drawer for any subject, a 10-minute TTL record lands in Cloudflare KV (`presence:viewing:<kind>:<id>`) naming the viewing mod. Used to warn a second mod before a destructive action. Never exposed outside the mod team.
+
+- **Claims.** When a moderator opens a modmail thread, a 10-minute TTL record in D1 `claims` marks that thread as being handled. Other moderators see a "Mod X on this" badge so two people don't reply simultaneously. TTL refreshes on every interaction; expired claims are purged hourly.
+
+None of the above contain user PII beyond what is already present in the moderator's normal working surface (usernames, post/thread ids, reason text the mod typed).
+
 ## Changes
 
 This policy is versioned with the extension. Material changes will ship alongside a version bump and a release note. The current source of truth is the file at this URL.
