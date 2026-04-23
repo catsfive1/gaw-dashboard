@@ -96,6 +96,20 @@ When the flag is on:
 
 Together these changes reduce the trust placed in the host page: the extension treats `greatawakening.win` more like an untrusted surface, keeps its sensitive state and credentials outside of reach of page scripts, and relies on the server rather than the page to establish who is doing what. Moderators who have not opted in to the flag are not affected.
 
+## v8.0 team productivity -- data categories
+
+v8.0 introduces three new worker-side data classes, all gated behind the `features.teamBoost` flag (default OFF). When the flag is off, none of the data below is ever created or read. All classes live in the existing audit D1.
+
+- **Shadow triage decisions.** Ephemeral AI-generated triage advisories for queue items, posts, and comments. Each row holds the subject kind, subject id, a pre-decided action (`APPROVE` | `REMOVE` | `WATCH` | `DO_NOTHING`), a confidence score, a short reason, a structured evidence payload the AI cited, the model + prompt version, and a created-at timestamp. Retention: 7 days from creation, purged daily by the existing audit cron. Purpose: let the UI badge obvious cases so moderators can focus on hard ones. Two human keystrokes are still required to commit an action -- the AI never finalizes a ban, remove, or watchlist write on its own. Never contains user PII beyond what the AI saw in the subject body.
+
+- **Parked items.** Structured records of moderator-to-senior handoffs. Each row holds `kind`, `subject_id`, `note`, `parker` (original mod's username), `status` (`open` | `resolved`), `resolved_by`, `resolved_at`, `resolution_action`, and `resolution_reason`. Retention: while open; 30 days after resolution, then purged. Purpose: let any moderator escape-hatch an unclear case to a senior mod without losing context. When a senior resolves the item, the original parker receives a Discord direct message notifying them of the outcome.
+
+- **AI suspect queue.** Replaces the pre-v8.0 behavior where the daily AI username scanner wrote directly to the watchlist. Now, any user the AI flags with `risk >= 70` lands in `ai_suspect_queue` with the AI risk score, the reason string, source label, model, and prompt version. A human moderator must explicitly review each suspect and choose a disposition (`watched` | `cleared` | `banned` | `ignored`). The AI never writes to the watchlist or actions table directly. Retention: persists until a moderator disposes of the row; disposed rows are kept for audit-log parity (indefinite, same class as the audit log).
+
+Precedent-citing ban messages (a v8.0 feature) use the v7.0 `precedents` table unchanged; no new data class is introduced. Citations are rendered by `rule_ref` and aggregate outcome count only -- never by user identifier. The client-side guard refuses to render a precedent that contains an authored_by, source_ref, user_id, or username field, and the worker's precedent-count SQL returns aggregates only.
+
+Every AI response rendered to a moderator (Shadow Queue badge, ban-draft header, Intel Drawer recommendation) carries a "Why this?" affordance that reveals the model, provider, prompt version, rules version, and generation timestamp. No AI verdict is shown without this provenance stamp.
+
 ## Changes
 
 This policy is versioned with the extension. Material changes will ship alongside a version bump and a release note. The current source of truth is the file at this URL.
