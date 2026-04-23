@@ -74,6 +74,28 @@ v7.1 introduces four new transient data classes, all stored in the existing audi
 
 None of the above contain user PII beyond what is already present in the moderator's normal working surface (usernames, post/thread ids, reason text the mod typed).
 
+## v7.2 platform hardening — data movement
+
+v7.2 introduces a set of changes to where moderation data lives and how it moves between the browser page, the extension, and the worker. These changes are **gated behind a feature flag** (`features.platformHardening`) which is **default OFF**. Moderators opt in via the extension settings panel. When the flag is off, the extension behaves exactly as v7.1.2 and none of the changes below apply.
+
+When the flag is on:
+
+- **Moderation state no longer mirrors to page localStorage.** The audit log, roster, Death Row queue, watchlist, user notes, and cached profile intel previously lived in two places at once: the extension's private storage AND the browser page's shared localStorage for `greatawakening.win`. v7.2 removes the page mirror. As a result, a compromised site script — or any other browser extension that can read the page's localStorage for that site — can no longer reach this moderation state. The data remains available to the extension itself through its own private storage.
+
+- **Worker authentication tokens moved to the extension's background service worker.** Previously, the per-moderator token used to authenticate with the Cloudflare Worker lived in the content script, the part of the extension that runs inside the `greatawakening.win` page. A compromise of that page could in principle reach the token. v7.2 keeps tokens in a segregated service-worker RAM cache and in `chrome.storage.session`, both of which are isolated from the page context. The content script requests actions through the service worker and never handles the tokens directly.
+
+- **Actor identity now verified server-side.** Before v7.2, when the extension performed a moderator action, it told the server which moderator was taking the action by reading the username from the page's DOM. That channel is removed. In v7.2 the server identifies the moderator from the verified authentication token alone. Audit trails and cross-moderator state (who banned whom, who claimed which modmail thread, who wrote which note) are therefore resistant to page spoofing: a malicious page can no longer cause an action to be attributed to a different moderator.
+
+- **Destructive actions are now idempotent.** Death Row bans cannot fire twice for the same user, even under rapid tab visibility changes, poll overlaps, or double-clicks. A server-side uniqueness constraint enforces this at the database level, so a retry of the same action is recognized as a duplicate rather than applied a second time.
+
+- **Invite claim no longer occurs from a URL alone.** Previously, visiting a URL containing `?mt_invite=<code>` would attempt to claim the invite automatically. v7.2 requires an explicit click on a "Claim invite" button in the extension popup after the moderator has reviewed the code. This closes a class of situations in which a malicious or mistakenly shared link could have caused an unintended claim.
+
+- **Error messages to moderators no longer surface raw backend diagnostics.** If the server fails, moderators see a normalized, human-readable message such as "permission denied" or "rate limited". Stack traces and internal details are no longer shown in the moderator-facing UI; they appear only in the browser console for debugging purposes.
+
+- **Page URL telemetry (bug reports) now strips URL fragments.** When the extension includes a page URL in a bug report, it previously stripped query parameters whose names looked like tokens. v7.2 additionally strips the `#fragment` portion of URLs in telemetry payloads. This closes a vector where an OAuth-style access token carried in a URL fragment could have been included in a bug report.
+
+Together these changes reduce the trust placed in the host page: the extension treats `greatawakening.win` more like an untrusted surface, keeps its sensitive state and credentials outside of reach of page scripts, and relies on the server rather than the page to establish who is doing what. Moderators who have not opted in to the flag are not affected.
+
 ## Changes
 
 This policy is versioned with the extension. Material changes will ship alongside a version bump and a release note. The current source of truth is the file at this URL.
