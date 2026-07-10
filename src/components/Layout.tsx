@@ -10,6 +10,7 @@ import { clearTokens, isLead } from '../lib/auth';
 const LINKS: { to: string; label: string; leadOnly?: boolean }[] = [
   { to: '/', label: 'Home' },
   { to: '/features', label: 'Features' },
+  { to: '/modules', label: 'Agent Modules' },
 ];
 
 export function Layout() {

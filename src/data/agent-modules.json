@@ -1,0 +1,83 @@
+{
+  "_comment": "Canonical registry of agent-support modules for the C5 / Hermes swarm. SINGLE SOURCE OF TRUTH — read by both the dashboard (src import) and the local helper (tools/agent-modules-helper.py). Add a module by appending an entry here; the tab and helper pick it up automatically. updateCmd is an ALLOWLIST — the helper only ever runs the exact updateCmd for a known id, never arbitrary input.",
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "liteparse",
+      "name": "LiteParse",
+      "description": "Local PDF/DOCX/image → markdown parser (Rust core). Powers parse_document() in the SuperAgent swarm. Zero LLM tokens, no cloud, no GPU.",
+      "kind": "npm-global",
+      "package": "@llamaindex/liteparse",
+      "registry": "npm",
+      "updateCmd": "npm install -g @llamaindex/liteparse@latest",
+      "docsUrl": "https://github.com/run-llama/liteparse",
+      "homepage": "https://www.llamaindex.ai/liteparse"
+    },
+    {
+      "id": "wrangler",
+      "name": "Wrangler",
+      "description": "Cloudflare Workers CLI — deploys gaw-mod-proxy and cc-proxy. The swarm's edge-deploy tool.",
+      "kind": "npm-global",
+      "package": "wrangler",
+      "registry": "npm",
+      "updateCmd": "npm install -g wrangler@latest",
+      "docsUrl": "https://developers.cloudflare.com/workers/wrangler/",
+      "homepage": "https://www.npmjs.com/package/wrangler"
+    },
+    {
+      "id": "yt-dlp",
+      "name": "yt-dlp",
+      "description": "YouTube transcript/media extractor behind pm-yt-helper (POST MASTER ingestion).",
+      "kind": "pip",
+      "package": "yt-dlp",
+      "registry": "pypi",
+      "updateCmd": "python -m pip install --upgrade yt-dlp",
+      "docsUrl": "https://github.com/yt-dlp/yt-dlp",
+      "homepage": "https://pypi.org/project/yt-dlp/"
+    },
+    {
+      "id": "firecrawl-py",
+      "name": "Firecrawl (py)",
+      "description": "URL → clean markdown scraper used by superagent_lib.firecrawl_scrape().",
+      "kind": "pip",
+      "package": "firecrawl-py",
+      "registry": "pypi",
+      "updateCmd": "python -m pip install --upgrade firecrawl-py",
+      "docsUrl": "https://docs.firecrawl.dev/",
+      "homepage": "https://pypi.org/project/firecrawl-py/"
+    },
+    {
+      "id": "sentence-transformers",
+      "name": "sentence-transformers",
+      "description": "Embedding models (bge) powering zvec-rag dense semantic search + the CAT CHOIR contestedness layer.",
+      "kind": "pip",
+      "package": "sentence-transformers",
+      "registry": "pypi",
+      "updateCmd": "python -m pip install --upgrade sentence-transformers",
+      "docsUrl": "https://www.sbert.net/",
+      "homepage": "https://pypi.org/project/sentence-transformers/"
+    },
+    {
+      "id": "zvec",
+      "name": "Zvec",
+      "description": "On-disk vector store backing zvec-rag (durable, metadata-filterable RAG).",
+      "kind": "pip",
+      "package": "zvec",
+      "registry": "pypi",
+      "updateCmd": "python -m pip install --upgrade zvec",
+      "docsUrl": "https://pypi.org/project/zvec/",
+      "homepage": "https://pypi.org/project/zvec/"
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright (py)",
+      "description": "Headless browser automation; CloakBrowser drop-in + e2e flows.",
+      "kind": "pip",
+      "package": "playwright",
+      "registry": "pypi",
+      "updateCmd": "python -m pip install --upgrade playwright",
+      "docsUrl": "https://playwright.dev/python/",
+      "homepage": "https://pypi.org/project/playwright/"
+    }
+  ]
+}

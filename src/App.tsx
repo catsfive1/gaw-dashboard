@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { Placeholder } from './pages/Placeholder';
 import { Home } from './pages/Home';
 import { Features } from './pages/Features';
+import { AgentModules } from './pages/AgentModules';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
       >
         <Route path="/" element={<Home />} />
         <Route path="/features" element={<Features />} />
+        <Route path="/modules" element={<AgentModules />} />
         <Route path="/audit" element={<Placeholder title="Audit" />} />
         <Route path="/firehose" element={<Placeholder title="Firehose" />} />
         <Route path="/modmail" element={<Placeholder title="Modmail" />} />
