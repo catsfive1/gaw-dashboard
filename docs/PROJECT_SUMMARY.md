@@ -1,7 +1,7 @@
 # GAW ModTools Dashboard — Project Summary
 
 - **Repo:** https://github.com/catsfive1/gaw-dashboard (branch `main`)
-- **HEAD at time of writing:** see "Recent work" below; the commit that added this doc is `docs: add project summary and architecture`
+- **HEAD at documentation time:** `d32ddbc331e2c55bef6c3ff6fcad4c8ab070b3fa` (`docs: add PROJECT_SUMMARY and SECURITY policy`)
 - **Version:** 0.3.0 (`package.json`)
 
 ## Purpose
